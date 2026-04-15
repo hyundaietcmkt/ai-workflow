@@ -233,17 +233,22 @@ let W=[],cId=null,catFilter='all',pc=null,ec=null,pwd=false;
 let currentUser=localStorage.getItem('wf_user')||'';
 
 /* ===== INIT ===== */
-function init(){
-  const saved=localStorage.getItem('wf_data');
-  if(saved){try{W=JSON.parse(saved)}catch(e){W=JSON.parse(JSON.stringify(defaults))}}
-  else{W=JSON.parse(JSON.stringify(defaults))}
+async function init(){
+  if(window.sharedLoad){
+    W=await sharedLoad('wf_data',defaults);
+    sharedOnSync('wf_data',function(d){W=d;renderList();if(cId)renderMain()});
+  }else{
+    const saved=localStorage.getItem('wf_data');
+    if(saved){try{W=JSON.parse(saved)}catch(e){W=JSON.parse(JSON.stringify(defaults))}}
+    else{W=JSON.parse(JSON.stringify(defaults))}
+  }
   if(!currentUser){document.getElementById('userModal').classList.add('show')}
   else{document.getElementById('userName').textContent=currentUser}
   renderList();
   if(W.length){selectWf(W[0].id)}else{showWelcome()}
 }
 
-function saveData(){localStorage.setItem('wf_data',JSON.stringify(W))}
+function saveData(){localStorage.setItem('wf_data',JSON.stringify(W));if(window.sharedSave)sharedSave('wf_data',W)}
 function gW(){return W.find(w=>w.id===cId)}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
 function esc(s){return s.replace(/'/g,"\\'")}
@@ -477,6 +482,6 @@ function renderMain(){
 
 /* ===== BOOT ===== */
 init();
-</script>
+<script src="shared-db.js"></script>
 </body>
 </html>
