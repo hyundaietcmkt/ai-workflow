@@ -6,7 +6,7 @@
  */
 (function(){
 const CFG={
-  KEY:'YOUR_API_KEY_HERE',
+  KEY:'$2b$10$복사한JSONBin키',
   BIN_WF:'',
   BIN_PRI:'',
   URL:'https://api.jsonbin.io/v3/b',
