@@ -231,8 +231,8 @@ let dragId=null;
 const ADMIN='이현우';
 let currentUser=localStorage.getItem('wf_user')||'';
 
-function save(){localStorage.setItem('priority_items',JSON.stringify(items))}
-function load(){const s=localStorage.getItem('priority_items');if(s){try{items=JSON.parse(s)}catch(e){}}}
+function save(){localStorage.setItem('priority_items',JSON.stringify(items));if(window.sharedSave)sharedSave('priority_items',items)}
+async function load(){if(window.sharedLoad){items=await sharedLoad('priority_items',items);sharedOnSync('priority_items',function(d){items=d;render()});return}const s=localStorage.getItem('priority_items');if(s){try{items=JSON.parse(s)}catch(e){}}}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
 
 /* ===== RENDER ===== */
@@ -345,7 +345,7 @@ function addItem(){
 function removeItem(id){const it=items.find(x=>x.id===id);if(!it)return;if(it.author!==currentUser&&currentUser!==ADMIN){toast('등록자 또는 관리자만 삭제할 수 있습니다');return}items=items.filter(x=>x.id!==id);save();render();toast('삭제됨')}
 
 /* ===== INIT ===== */
-load();render();
-</script>
+load().then(()=>render());
+<script src="shared-db.js"></script>
 </body>
 </html>
